@@ -134,7 +134,7 @@
     <ClCompile Include="string-deconstruction.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\Books\A_Touch_of_Darkness-Scarlett_St_Clair\clean.txt" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
