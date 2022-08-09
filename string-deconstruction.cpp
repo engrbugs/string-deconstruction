@@ -9,11 +9,15 @@
 #include <sstream>
 #include <iomanip>
 
+#include <algorithm>
+
 using std::cout; using std::cin;
 using std::endl; using std::string;
 
 namespace fs = std::filesystem;
 using namespace std;
+
+const char* end_sentence[2] = { ".", "”" };
 
 int put_numbers() {
     string line;
@@ -67,9 +71,42 @@ int filter_quotes() {
     return 0;
 }
 
+int organize_quotes() {
+    //string line1 = "“He has taken on the role of puppet master, ” Demeter had chided.“Deciding fates as if he were one of the Moirai himself.He should be ashamed.”";
+    //string line2 = "The girl smiled and asked, “Vanilla latte?”";
+    //string line3 = "Persephone couldn’t deny she was curious. This was the thrill she’d been seeking—the adventure she craved. “Tell me.”";
+    //string line4 = "“Excuse me?” Persephone asked.";
+    //string line5 = "Persephone couldn’t deny she was curious. This was the thrill she’d been seeking—the adventure she craved. “Tell me.”";
+    //string line6 = "“You are mistaken.”";
+    //string line7 = "3062-“You left me desperate, swollen with need only for you,” he gritted out. For a moment, she thought he might leave her desperate in return, but then he said, “But I will be a generous lover.”";
+    // 
+    //
+
+    //std::string s = "a_b_c";
+    //std::string::difference_type n = std::count(line1.begin(), line1.end(), '“');
+
+    //cout << n << "\n";
+
+    //return 0;
+
+    ifstream file_source(fs::current_path().string() + "\\quotes.txt");
+    if (file_source.is_open())
+    {
+        string line;
+        while (getline(file_source, line))
+        {
+            std::string::difference_type n = std::count(line.begin(), line.end(), '“');
+            if (n > 2) cout << line << "\n";
+            // https://cplusplus.com/reference/string/string/find/
+        }
+    }
+    return 0;
+}
+
 int main()
 {
     // 1. // put_numbers();
-    filter_quotes(); // 2.
+    // 2. filter_quotes();
+    organize_quotes();
     cout << "Current path is " << fs::current_path() << '\n'; // (1)
 }
