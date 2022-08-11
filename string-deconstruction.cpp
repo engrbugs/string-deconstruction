@@ -73,59 +73,76 @@ int filter_quotes() {
     return 0;
 }
 
+std::string tail(std::string const& source, size_t const length) {
+    if (length >= source.size()) { return source; }
+    return source.substr(source.size() - length);
+}
+
 int organize_quotes() {
     string line1 = "“He has taken on the role of puppet master, ” Demeter had chided. “Deciding fates as if he were one of the Moirai himself.He should be ashamed.”";
     string line2 = "The girl smiled and asked, “Vanilla latte?”";
     string line3 = "Persephone couldn’t deny she was curious. This was the thrill she’d been seeking—the adventure she craved. “Tell me.”";
     string line4 = "“Excuse me?” Persephone asked.";
-    string line5 = "Persephone couldn’t deny she was curious. This was the thrill she’d been seeking—the adventure she craved. “Tell me.”";
+    string line5 = "“I get that,” Lexa said. “Man, your mother is a bitch,” she said and then hunkered down as if she expected lightning to strike her. “Will she kill me for saying that?”";
     string line6 = "“You are mistaken.”";
-    string line7 = "3062-“You left me desperate, swollen with need only for you,” he gritted out. For a moment, she thought he might leave her desperate in return, but then he said, “But I will be a generous lover.”";
+    string line7 = "“You left me desperate, swollen with need only for you,” he gritted out. For a moment, she thought he might leave her desperate in return, but then he said, “But I will be a generous lover.”";
     
-    string line = line1;
     //count how many quotes the line have.
-    std::string::difference_type n = std::count(line.begin(), line.end(), '“');
+    
 
-    vector<string> entry;
-    size_t start = 0;
-    for (int i = 0; i <= n - 1; i++) {
-        cout << i+1 << endl;
-
-        start = line.find('“', start);
-        size_t end = line.find('”', start);
-        size_t period = line.find('.', end);
-        if (start == 0) {
-            entry.push_back(line.substr(start, period + 1));
-        }
-        else if (period == -1) {
-            //find the period in reverse
-            cout << -1 << endl;
-            size_t period = line.rfind('.', start);
-            size_t end_quote = line.rfind('”', start);
-            cout << period << ' ' << end_quote << endl;
-        }
-
-        //replace(entry.begin(), entry.end(), entry[entry.size() - 1], string{ "Bill" });
-
-        /*size_t end = line.find('”', start);
-
-
-        size_t prior_period = line.rfind('h', start);
-        
-        size_t period2 = line.find('.', period+1);
-        size_t len = line.length();
-
-        cout << prior_period << endl;
-        cout << ((period == -1) ? "lll" : "A") << endl;*/
-
-        //cout << loc << " " << end << period << period2 << len << endl;
- 
-        start++;
-    }
-    for (vector<string>::iterator t = entry.begin(); t != entry.end(); ++t)
+    string line;
+    ifstream file_source(fs::current_path().string() + "\\quotes.txt");
+    if (file_source.is_open())
     {
-        cout << *t << endl;
+
+        while (getline(file_source, line))
+        {
+            line = tail(line, line.length() - 5); // remove the '####-'
+            std::string::difference_type n = std::count(line.begin(), line.end(), '“');
+            vector<string> entry;
+            size_t start = 0;
+            int m = 0;
+            for (int i = 0; i <= n - 1; i++) {
+                // look for start and end quote, then period after the it.
+                start = line.find('“', start);
+                size_t end = line.find('”', start);
+                size_t period = line.find('.', end);
+                size_t len = line.length();
+
+                if (start == 0 && end + 1 != len) {
+                    entry.push_back(line.substr(start, period + 1));
+                }
+                else if (start == 0 && end + 1 == len) {
+                    entry.push_back(line);
+                }
+                // no period onward
+                else if (period == -1) {
+                    //find the period in reverse
+                    size_t rperiod = line.rfind('.', start - 3);
+                    size_t end_quote = line.rfind('”', start);
+                    // if no period also backward
+                    if (rperiod == -1 && end_quote != -1) {
+                        // merge the last entry with this quote.
+                        replace(entry.begin(), entry.end(), entry[entry.size() - 1], entry[entry.size() - 1] + ' ' + line.substr(start, end + 1));
+
+                    }
+                    else if (rperiod == -1 && end_quote == -1) {
+                        entry.push_back(line);
+                    }
+                    else {
+                        entry.push_back(line.substr(rperiod + 2, end + 1));
+                    }
+                }
+                start++;
+            }
+            for (vector<string>::iterator t = entry.begin(); t != entry.end(); ++t)
+            {
+                cout << *t << endl;
+            }
+        }
     }
+
+    
     return 0;
 
     //ifstream file_source(fs::current_path().string() + "\\quotes.txt");
