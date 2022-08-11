@@ -97,7 +97,9 @@ int organize_quotes() {
 
         while (getline(file_source, line))
         {
+            string number = line.substr(0, 5);
             line = tail(line, line.length() - 5); // remove the '####-'
+            //line = "“Not at all.” Adonis smiled at her. “Ready?”";
             std::string::difference_type n = std::count(line.begin(), line.end(), '“');
             vector<string> entry;
             size_t start = 0;
@@ -121,7 +123,11 @@ int organize_quotes() {
                     size_t rperiod = line.rfind('.', start - 3);
                     size_t end_quote = line.rfind('”', start);
                     // if no period also backward
-                    if (rperiod == -1 && end_quote != -1) {
+                    if (entry.size() != 0 && rperiod < end_quote) {
+                        replace(entry.begin(), entry.end(), entry[entry.size() - 1], entry[entry.size() - 1] + ' ' + line.substr(start, end + 1));
+                    }
+                    else if (entry.size() != 0 && rperiod < end_quote || 
+                        rperiod == -1 && end_quote != -1) {
                         // merge the last entry with this quote.
                         replace(entry.begin(), entry.end(), entry[entry.size() - 1], entry[entry.size() - 1] + ' ' + line.substr(start, end + 1));
 
@@ -137,7 +143,7 @@ int organize_quotes() {
             }
             for (vector<string>::iterator t = entry.begin(); t != entry.end(); ++t)
             {
-                cout << *t << endl;
+                cout << number << *t << endl;
             }
         }
     }
