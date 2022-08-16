@@ -20,6 +20,23 @@ namespace fs = std::filesystem;
 using namespace std;
 
 const char* end_sentence[2] = { ".", "”" };
+const std::string WHITESPACE = " \n\r\t\f\v";
+
+std::string ltrim(const std::string& s)
+{
+    size_t start = s.find_first_not_of(WHITESPACE);
+    return (start == std::string::npos) ? "" : s.substr(start);
+}
+
+std::string rtrim(const std::string& s)
+{
+    size_t end = s.find_last_not_of(WHITESPACE);
+    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+
+std::string trim(const std::string& s) {
+    return rtrim(ltrim(s));
+}
 
 int put_numbers() {
     string line;
@@ -84,12 +101,12 @@ int organize_quotes() {
     string line3 = "Persephone couldn’t deny she was curious. This was the thrill she’d been seeking—the adventure she craved. “Tell me.”";
     string line4 = "“Excuse me?” Persephone asked.";
     string line5 = "“I get that,” Lexa said. “Man, your mother is a bitch,” she said and then hunkered down as if she expected lightning to strike her. “Will she kill me for saying that?”";
-    string line6 = "“You are mistaken.”";
+    string line6 = "Hades was now toe to toe with her, looking down, eyes like coals. “I know you.” He trailed his fingers over her collarbone and moved so that he was behind her. “I know the way your breath hitches when I touch you. I know how your skin flushes when you’re thinking about me. I know there is something beneath this pretty facade.”";
     string line7 = "“You left me desperate, swollen with need only for you,” he gritted out. For a moment, she thought he might leave her desperate in return, but then he said, “But I will be a generous lover.”";
     
     //count how many quotes the line have.
     
-
+    ofstream file_organize(fs::current_path().string() + "\\organized.txt");
     string line;
     ifstream file_source(fs::current_path().string() + "\\quotes.txt");
     if (file_source.is_open())
@@ -99,7 +116,7 @@ int organize_quotes() {
         {
             string number = line.substr(0, 5);
             line = tail(line, line.length() - 5); // remove the '####-'
-            //line = "“Not at all.” Adonis smiled at her. “Ready?”";
+            //line = line6;
             std::string::difference_type n = std::count(line.begin(), line.end(), '“');
             vector<string> entry;
             size_t start = 0;
@@ -111,8 +128,8 @@ int organize_quotes() {
                 size_t period = line.find('.', end);
                 size_t len = line.length();
 
-                if (start == 0 && end + 1 != len) {
-                    entry.push_back(line.substr(start, period + 1));
+                if (start == 0 && end + 1 != len || start != -1 && period != -1 ) {
+                    entry.push_back(line.substr(start, period - start + 1));
                 }
                 else if (start == 0 && end + 1 == len) {
                     entry.push_back(line);
@@ -143,12 +160,13 @@ int organize_quotes() {
             }
             for (vector<string>::iterator t = entry.begin(); t != entry.end(); ++t)
             {
-                cout << number << *t << endl;
+                file_organize << number << trim(*t) << endl;
             }
         }
     }
+    file_source.close();
+    file_organize.close();
 
-    
     return 0;
 
     //ifstream file_source(fs::current_path().string() + "\\quotes.txt");
@@ -169,6 +187,6 @@ int main()
 {
     // 1. // put_numbers();
     // 2. filter_quotes();
-    organize_quotes();
+    organize_quotes(); // 3.
     cout << "Current path is " << fs::current_path() << '\n'; // (1)
 }
